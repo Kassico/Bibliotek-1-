@@ -15,7 +15,7 @@ namespace Bibliotek__1_
 
             List<Böcker> AllaBöcker = new List<Böcker>();
 
-            List<LånadeBöcker> LånadeBöcker = new List<LånadeBöcker>();
+            static List<LånadeBöcker> LånadeBöcker = new List<LånadeBöcker>();
 
             bool valt = false;
 
