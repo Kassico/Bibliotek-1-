@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Threading;
+using System.Diagnostics.Eventing.Reader;
 
 namespace Bibliotek__1_
 {
@@ -19,8 +20,6 @@ namespace Bibliotek__1_
         {
 
                 LägginIListaBok();
-                LägginIListaLånebok();
-
 
             bool kör = true;
             while (kör)
@@ -90,14 +89,6 @@ namespace Bibliotek__1_
 
         }           //Skapar filen för Böcker om det inte fins en
 
-        static void skapafilLåneBöker()
-        {
-            if (!File.Exists("LånadeBöcker.txt"))
-            {
-                File.Create("LånadeBöcker.txt").Close();
-            }
-        }       //Skapar filen för lånade böcker om det inte finns en
-
         static void LägginIListaBok()
 
         { if (File.Exists("Böcker.txt"))
@@ -108,9 +99,10 @@ namespace Bibliotek__1_
                     while ((rad = läsfill.ReadLine()) != null)
                     {
                         string[] delar = rad.Split(',');
-                        if (delar.Length == 2)
-                        { 
-                            AllaBöcker.Add(new Böcker(delar[0], delar[1]));
+                        if (delar.Length == 3)
+                        {
+                            bool ärLånad = bool.Parse(delar[2]);
+                            AllaBöcker.Add(new Böcker(delar[0], delar[1], ärLånad));
                             
                         }
                     }
@@ -121,36 +113,16 @@ namespace Bibliotek__1_
 
         }         //Lägger in alla böcker i listan
 
-        static void LägginIListaLånebok()
-
+        static void skrivInIFillBok()
         {
-            if (File.Exists("LånadeBöcker.txt"))
-            {
-                using (StreamReader läsfill = new StreamReader("LånadeBöcker.txt"))
-                {
-                    string rad;
-                    while ((rad = läsfill.ReadLine()) != null)
-                    {
-                        string[] delar = rad.Split(',');
-                        LånadeBöcker.Add(new LånadeBöcker(delar[0], delar[1]));
-                    }
-                }
-            }
-            else
-            { skapafilLåneBöker(); }
-
-        }     //Lägger in alla lånade böcker i listan
-
-        static void sktivInIFillBok()
-        {
-
+            
 
             if (File.Exists("Böcker.txt"))
             {
                 using (StreamWriter skrivfill = new StreamWriter("Böcker.txt", false))
-                    for (int i = 0; i < AllaBöcker.Count; i++)
+                    foreach (var bok in AllaBöcker)
                     {
-                        skrivfill.WriteLine($"{AllaBöcker[i].BokNamn}, {AllaBöcker[i].Författare}");
+                        skrivfill.WriteLine($"{bok.BokNamn},{bok.Författare},{bok.ÄrLånad}");
                     }
             }
             else
@@ -159,50 +131,100 @@ namespace Bibliotek__1_
             }
         }      //skriver in Böcker i filen
 
-
-        static void sktivInIFillLånade()
-        {
-           
-                if (File.Exists("LåneBöcker.txt"))
-                {
-                    for (int i = 0; i < LånadeBöcker.Count; i++)
-                    {
-                        using (StreamWriter skrivfill = new StreamWriter(("LåneBöcker.txt"), true))
-                        {
-                            skrivfill.WriteLine($"{LånadeBöcker[i].Författare}, {LånadeBöcker[i].BokNamn}");
-                        }
-                    }
-                }
-            else
-            {
-                skapafilLåneBöker();
-            }
-
-        }      //skriver in Lånade Böcker i filen
-
         static void ListaAlla()
         {
             
 
-            Console.WriteLine("\nAlla böcker i biblioteket är: \n");
+            Console.WriteLine("\nAlla böcker i biblioteket är:");
 
             for (int i = 0, j = 1; i < AllaBöcker.Count; i++, j++)
             {
-                Console.WriteLine($"{j}. {AllaBöcker[i].BokNamn}, {AllaBöcker[i].Författare}");
-            }   
+               
+                if (!AllaBöcker[i].ÄrLånad)
+                {
+                    Console.WriteLine($"{j}. {AllaBöcker[i].BokNamn}, {AllaBöcker[i].Författare}");
+                }
+
+
+            }
+            Console.WriteLine("\nAlla lånade böcker är: ");
+            for (int i = 0, j = 1; i < AllaBöcker.Count; i++, j++)
+            {
+                if (AllaBöcker[i].ÄrLånad)
+                {
+                    Console.WriteLine($"{j}. {AllaBöcker[i].BokNamn}, {AllaBöcker[i].Författare},     (Boken är lånad)");
+                }
+            }
+        }
+
+
+        static void lämnaTillbacka()
+        {
+            string boknamn = testastring("Vilken bok vill du lämna tillbacka? (Skriv bokens namn)");
+
+            for (int i = 0; i < AllaBöcker.Count; i++)
+            {
+                if (AllaBöcker[i].BokNamn == boknamn)
+                {
+                    AllaBöcker[i].ÄrLånad = false;
+                    Console.WriteLine($"Boken {boknamn} är nu tillbacka lämnad");
+                    skrivInIFillBok();
+                    return;
+                }
+                else if (i == AllaBöcker.Count - 1)
+                {
+                    Console.WriteLine("Boken finns inte i biblioteket");
+                }
+            }
+
 
         }
         static void lånabook()
         {
 
-            
+            string boknamn = testastring("Vilken bok vill du låna ? (Skriv bokens namn)");
+            for (int i = 0; i < AllaBöcker.Count; i++)
+            {
+                if (AllaBöcker[i].BokNamn == boknamn)
+                {
+                    if (AllaBöcker[i].ÄrLånad)
+                    {
+                        Console.WriteLine("Boken är redan lånad");
+                        return;
+                    }
+                    AllaBöcker[i].ÄrLånad = true;
+                    Console.WriteLine($"Du har lånat boken {boknamn}");
+                    skrivInIFillBok();
+                    return;
+                }
+                else if (i == AllaBöcker.Count - 1)
+                {
+                    Console.WriteLine("Boken finns inte i biblioteket");
+                }
+            }
+        }
+        static void listaLånade()
+        {
+
+
+            for (int i = 0; AllaBöcker.Count < i; i ++)
+            {
+                if (AllaBöcker[i].ÄrLånad)
+                {
+                    Console.WriteLine($"{AllaBöcker[i].BokNamn}, {AllaBöcker[i].Författare}");
+                }
+
+                if (i == 0)
+                {
+                    Console.WriteLine("Det finns inga lånade böcker");
+                }
+            }
+
 
         }
-        static void lämnaTillbacka() 
-        {
-        
-        
-        }
+
+
+
         static void läggtill() 
         {
 
@@ -211,15 +233,15 @@ namespace Bibliotek__1_
 
             string författare = testastring("vad är författaren till boken?");
  
-            AllaBöcker.Add(new Böcker(boknamn, författare));
-            sktivInIFillBok();
+            AllaBöcker.Add(new Böcker(boknamn, författare, false));
+            skrivInIFillBok();
             
 
         }
         static void taBort() 
         {
             bool finns = false;
-            int svar = HeltalCheck("vill du ta bort en bok med bokets namn (1) eller med Förfataren (2)");
+            int svar = HeltalCheck("vill du ta bort en med hjälp av titielen (1) eller ta bort alla böcker hos en författare (2) ");
             if (svar == 1)
             {
                 string namnPåTaBortBok = testastring("Vilken bok vill du ta bort? (Skriv bokens namn)");
@@ -229,6 +251,7 @@ namespace Bibliotek__1_
                     {
                         AllaBöcker.RemoveAt(i);
                         Console.WriteLine($"Boken med namnet {namnPåTaBortBok} är bort tagen");
+                        skrivInIFillBok();
                         finns = true;
                         break;
                     }
@@ -241,34 +264,94 @@ namespace Bibliotek__1_
 
             else if (svar == 2)
                 {
-                    string namnPÅFörfattare = testastring("Vilken bok vill du ta bort? (Skriv förfataren)");
-                    if (AllaBöcker.Exists(x => x.Författare == namnPÅFörfattare))
-                    {
-                        AllaBöcker.RemoveAll(x => x.Författare == namnPÅFörfattare);
-                        Console.WriteLine($"Boken med förfataren {namnPÅFörfattare} är bort tagen");
-                    }
-                    else { Console.WriteLine("Finns inge bok med den förfataren."); }
+                
+                string namnPÅFörfattare = testastring("Vilken bok vill du ta bort? (Skriv förfataren)");
+                    if (namnPÅFörfattare.ToLower() == "nej")
+                {
+                    Console.WriteLine("Du valde att inte ta bort någon bok");
+                    return;
                 }
-             else { Console.WriteLine("SVARA MED 1 ELLER 2!!!!"); }
-            
+
+                bool tarBortFörfatare = true;
+                while (tarBortFörfatare)
+                {
+                    string svarString = testastring($"Vill du ta bort alla böcker med förfataren {namnPÅFörfattare}? (ja/nej)");
+
+                    if (svarString == "ja")
+                    {
+                    for (int i = AllaBöcker.Count - 1; i >= 0; i--)
+                    {
+                        if (AllaBöcker[i].Författare == namnPÅFörfattare)
+                        {
+                            AllaBöcker.RemoveAt(i);
+                            
+                                skrivInIFillBok();
+
+                                if (i == 0)
+                                {
+                                    Console.WriteLine($"Alla böcker med förfatare {namnPÅFörfattare} är borttagna");
+                                    tarBortFörfatare = false;
+                                }
+
+                            }
+                    }
+                    }
+                    else if (svarString == "nej")
+                    { 
+                        Console.WriteLine("Du valde att inte ta bort någon bok");
+                        tarBortFörfatare = false;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Svar med ja eller nej!!!!");
+                    }
+                }
 
 
-        }
-        static void listaLånade() 
-        {
-        
-        
+            }
+            else { Console.WriteLine("SVARA MED 1 ELLER 2!!!!"); }
+
         }
         static void sökEfter() 
         {
+            string boksvar = testastring("Vilken bok vill du söka efter? (Skriv bokens namn eller författare)");
+            Console.WriteLine($"\nAlla böcker med namnet {boksvar}: \n");
+            foreach (var bok in AllaBöcker)
+            {
+                
+                if (bok.BokNamn == boksvar)
+                {
+                    Console.WriteLine($"{bok.BokNamn}, {bok.Författare}");
+                }
 
-           
+                
+
+                
+            }
+            Console.WriteLine("\nAlla böcker med författaren är: \n");
+            foreach (var bok in AllaBöcker)
+            {
+                if (bok.Författare == boksvar)
+                {
+                    Console.WriteLine($"{bok.BokNamn}, {bok.Författare}");
+                }
+            }
+
+                for (int i = AllaBöcker.Count-1; i <= 0; i--)
+            {
+                if (AllaBöcker[i].BokNamn != boksvar && AllaBöcker[i].Författare != boksvar)
+                {
+                    Console.WriteLine("\nFinns ingen bok med det namnet eller författaren");
+                }
+            }
+
+
+
         }
 
 
         static void redigera() { }
         static void avslutaSpara() { }
-        static void avslutaUtanSpara() { }
 
         static int HeltalCheck(string fråga)
         {

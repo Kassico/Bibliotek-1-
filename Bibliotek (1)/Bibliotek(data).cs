@@ -12,11 +12,12 @@ namespace Bibliotek__1_
 
         public string Författare { get; set; }
         public string BokNamn {  get; set; }
-
-        public Böcker(string bokNamn, string författare)
+        public bool ÄrLånad { get; set; }
+        public Böcker(string bokNamn, string författare, bool ärLånad)
         {
              Författare = författare;
              BokNamn = bokNamn;
+             ÄrLånad = ärLånad;
         }   
 
     }
@@ -27,10 +28,13 @@ namespace Bibliotek__1_
         public string Författare { get; set; }
         public string BokNamn { get; set; }
 
+        
+
         public LånadeBöcker(string bokNamn, string författare)
         {
             Författare = författare;
             BokNamn = bokNamn;
+            
 
         }
     }
