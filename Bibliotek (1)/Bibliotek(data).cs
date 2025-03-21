@@ -8,12 +8,12 @@ namespace Bibliotek__1_
 {
     internal class Böcker
     {
-        internal static int count;
+        
 
         public string Författare { get; set; }
         public string BokNamn {  get; set; }
 
-        public Böcker(string författare, string bokNamn)
+        public Böcker(string bokNamn, string författare)
         {
              Författare = författare;
              BokNamn = bokNamn;
@@ -24,12 +24,12 @@ namespace Bibliotek__1_
     internal class LånadeBöcker
     {
 
-        public string Förfatare { get; set; }
+        public string Författare { get; set; }
         public string BokNamn { get; set; }
 
-        public LånadeBöcker(string författare, string bokNamn)
+        public LånadeBöcker(string bokNamn, string författare)
         {
-            Förfatare = författare;
+            Författare = författare;
             BokNamn = bokNamn;
 
         }
