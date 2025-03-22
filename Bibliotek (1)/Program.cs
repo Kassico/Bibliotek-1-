@@ -60,6 +60,7 @@ namespace Bibliotek__1_
                     case 8:
                         redigera(); valt = true; break;
                     case 9:
+                            Environment.ExitCode = 0;
                         avslutaSpara(); valt = true; break;
                     
                     default:
@@ -349,9 +350,28 @@ namespace Bibliotek__1_
 
         }
 
-
-        static void redigera() { }
-        static void avslutaSpara() { }
+        static void redigera() 
+        {
+            string boknamn = testastring("Vilken bok vill du redigera? (Skriv bokens namn)");
+            foreach (var bok in AllaBöcker)
+            {
+                if (bok.BokNamn == boknamn)
+                {
+                    string nyttBoknamn = testastring("Vad är det nya namnet på boken?");
+                    string nyFörfattare = testastring("Vad är det nya författaren på boken?");
+                    bok.BokNamn = nyttBoknamn;
+                    bok.Författare = nyFörfattare;
+                    Console.WriteLine($"Boken {boknamn} är nu redigerad till {nyttBoknamn} och författaren är nu {nyFörfattare}");
+                    skrivInIFillBok();
+                    return;
+                }
+            }
+        }
+        static void avslutaSpara() 
+        {
+            int Exitcode = 0;
+            Environment.Exit(Exitcode);
+        }
 
         static int HeltalCheck(string fråga)
         {
