@@ -22,20 +22,5 @@ namespace Bibliotek__1_
 
     }
     
-    internal class LånadeBöcker
-    {
 
-        public string Författare { get; set; }
-        public string BokNamn { get; set; }
-
-        
-
-        public LånadeBöcker(string bokNamn, string författare)
-        {
-            Författare = författare;
-            BokNamn = bokNamn;
-            
-
-        }
-    }
 }
