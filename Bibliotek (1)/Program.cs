@@ -419,22 +419,96 @@ namespace Bibliotek__1_
 
         }
 
-        static void redigera() 
+        static void redigera()
         {
-            string boknamn = testastring("Vilken bok vill du redigera? (Skriv bokens namn)");
-            foreach (var bok in AllaBöcker)
+            bool finns = false;
+            while (!finns)
+            { 
+            
+            string svar = testastring("Vill du redigera boknamn eller författare?").ToLower();
+            if (svar == "författare")
             {
-                if (bok.BokNamn == boknamn)
+                    string boknamn = testastring("Vilken bok vill du redigera? (Skriv bokens namn)");
+                    foreach (var bok in AllaBöcker)
                 {
-                    string nyttBoknamn = testastring("Vad är det nya namnet på boken?");
-                    string nyFörfattare = testastring("Vad är det nya författaren på boken?");
-                    bok.BokNamn = nyttBoknamn;
-                    bok.Författare = nyFörfattare;
-                    Console.WriteLine($"Boken {boknamn} är nu redigerad till {nyttBoknamn} och författaren är nu {nyFörfattare}");
-                    skrivInIFillBok();
-                    return;
+                    if (bok.BokNamn.ToLower() == boknamn.ToLower())
+                    {
+                        string nyFörfattare = testastring("Vad är det nya författaren på boken?");
+                        bok.Författare = nyFörfattare;
+                        Console.WriteLine($"Boken {boknamn} är nu redigerad och författaren är nu {nyFörfattare}");
+                        skrivInIFillBok();
+                            finns = true;
+                    }
+
+                    }
+                    if (finns == false)
+                    {
+                        Console.WriteLine("Boken finns inte i biblioteket");
+                        while (!finns)
+                        {
+
+                            svar = testastring("Vill du redigera en annan bok? (ja/nej)").ToLower();
+
+                            if (svar == "nej")
+                            {
+                                Console.WriteLine("Du valde att inte redigera någon bok");
+                                finns = true;
+                            }
+                            else if (svar == "ja")
+                            {
+                                finns = false;
+                                break;
+                            }
+                            else
+                            {
+                            }
+                        }
+                    }
                 }
-            }
+            else if (svar == "boknamn")
+            {
+                    string boknamn = testastring("Vilken bok vill du redigera? (Skriv bokens namn)");
+
+
+                    foreach (var bok in AllaBöcker)
+                {
+                        if (bok.BokNamn.ToLower() == boknamn.ToLower())
+                        {
+                            boknamn = testastring("Vad är det nya titelen på boken?");
+                            bok.BokNamn = boknamn;
+                            Console.WriteLine($"Den nya titlen är nu {boknamn}");
+                            skrivInIFillBok();
+                            finns = true; break;
+                        }
+                    }
+                        if (finns == false)
+                    {
+                        Console.WriteLine("Boken finns inte i biblioteket");
+                        while (!finns)
+                        {
+
+                            svar = testastring("Vill du redigera en annan bok? (ja/nej)").ToLower();
+
+                            if (svar == "nej")
+                            {
+                                Console.WriteLine("Du valde att inte redigera någon bok");
+                                finns = true;
+                            }
+                            else if (svar == "ja")
+                            {
+                                finns = false;
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Svara med ja eller nej!!!!");
+                            }
+                        }
+                    }
+                }
+
+                else { Console.WriteLine("Svara med författare eller boknamn!!!!"); }
+        }
         }
         static void avslutaSpara() 
         {
@@ -478,6 +552,3 @@ namespace Bibliotek__1_
         }
     }           
 }
-
-
-
