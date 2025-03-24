@@ -78,19 +78,13 @@ namespace Bibliotek__1_
             }
         }
 
-        static void skapafilBöker()
+        static void skapaFillBöcker()
         {
             if (!File.Exists("Böcker.txt"))
             {
                 File.Create("Böcker.txt").Close();
 
-                for (int i = 0; i < AllaBöcker.Count; i++)
-                {
-                    using (StreamWriter skrivfill = new StreamWriter("Böcker.txt", true))
-                    {
-                        skrivfill.WriteLine($"bok1,föfatare1,false");
-                    }
-                }
+               
                 using (StreamWriter skrivfill = new StreamWriter("Böcker.txt", true)) skrivfill.WriteLine("The Hobbit,J.R.R.Tolkien,false");
                 using (StreamWriter skrivfill = new StreamWriter("Böcker.txt", true)) skrivfill.WriteLine("1984,George Orwell,false");
                 using (StreamWriter skrivfill = new StreamWriter("Böcker.txt", true)) skrivfill.WriteLine("Dune,Frank Herbert,false");
@@ -143,7 +137,7 @@ namespace Bibliotek__1_
                 }
             }
             else
-            { skapafilBöker(); }
+            { skapaFillBöcker(); }
             }
 
         }         //Lägger in alla böcker i listan
@@ -162,7 +156,7 @@ namespace Bibliotek__1_
             }
             else
             {
-                skapafilBöker();
+                skapaFillBöcker();
             }
         }      //skriver in Böcker i filen
 
@@ -201,12 +195,16 @@ namespace Bibliotek__1_
 
             for (int i = 0; i < AllaBöcker.Count; i++)
             {
-                if (AllaBöcker[i].BokNamn.ToLower() == boknamn.ToLower())
+                if (AllaBöcker[i].BokNamn.ToLower() == boknamn.ToLower() && AllaBöcker[i].ÄrLånad)
                 {
                     AllaBöcker[i].ÄrLånad = false;
                     Console.WriteLine($"Boken {boknamn} är nu tillbacka lämnad");
                     skrivInIFillBok();
                     return;
+                }
+                else if (!AllaBöcker[i].ÄrLånad)
+                { 
+                Console.WriteLine("Boken är inte lånad");
                 }
                 else if (i == AllaBöcker.Count - 1)
                 {
